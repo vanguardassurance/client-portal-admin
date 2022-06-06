@@ -43,23 +43,12 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap text-base text-center font-medium text-gray-900">
                                         <div class="text-sm font-normal text-gray-900">{{claim.status}}</div>
-                                        <div class="text-xs font-normal text-gray-500" v-if="claim.department">{{claim.department}}</div>
+                                        <div class="text-xs font-normal text-gray-500" v-if="claim.department">{{claim.department}} - {{claim.stage}}</div>
                                         <div class="text-xs font-normal text-gray-500" v-else>Claims</div>
                                     </td>
                                     
                                     <td class="p-2 whitespace-nowrap space-x-2text-right ">
-                                        <nuxt-link type="button" :to="links.view+claim._id" title="View" class="text-white bg-amber-600 hover:bg-amber-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2 text-center">
-                                            <i class="fa fa-eye"></i>
-                                        </nuxt-link>
-                                        <button type="button" @click="loadCommentsBox(claim.id)" title="Comment." class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2 text-center">
-                                            <i class="fa fa-comment"></i>
-                                        </button>
-                                        <button type="button" title="View history" @click="loadHistory(claim.id)" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2 text-center">
-                                            <i class="fa fa-history"></i>
-                                        </button>
-                                        <button type="button" title="Move to next stage." @click="loadStages(claim.id)" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-3 py-2 text-center">
-                                            <i class="fa fa-arrow-right"></i>
-                                        </button>
+                                        <ListActions recordType="motor_claim" :linkToView="true" :item="claim" :stagesControlButtons="true" stagesType="motor_claim" linkPrepend="motor/" :id="claim._id" />
                                     </td>
                                 </tr>                
                             </tbody>
@@ -69,17 +58,45 @@
 
 
 <script>
+import ListActions from './ListActions.vue'
 
 export default {
     name: "MotorClaimsListIndex",
     props: {
         claims: []
     },
-    data: ()=> {
+    data: () => {
         return {
-            links: {'view': 'motor/'}
-        }
-    }
+           
+        };
+    },
+    created() {
+        this.loadStages();
+    },
+    methods: {
+        loadStages() {
+            this.$axios.post("admin/motor-claim-stages", { stage_parent: "motor_claim" })
+                .then(stages => {
+                this.stages = stages.data;
+            });
+        },
+        
+        updateStage(claim) {
+            this.$axios.post("admin/motor-claim-update-stage", { previous: claim.stage, current: this.stage, current_department: this.stages[this.stage], previous_department: this.stages[claim.stage], comment: this.comment, type: "motor_claim", direction: this.direction, claim_id: this.id })
+                .then(data => {
+                this.getClaim();
+                this.toggleStagesModal();
+            });
+        },
+        toggleStagesModal(id = null) {
+            this.stagesModal = !this.stagesModal;
+            this.id = id;
+        },
+        toggleHistoryModal() {
+            this.historyModal = !this.historyModal;
+        },
+    },
+    components: { ListActions }
 }
 
 </script>

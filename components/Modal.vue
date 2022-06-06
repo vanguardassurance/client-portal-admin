@@ -9,8 +9,8 @@
             <h3 class="text-xl font-semibold">
               {{title}}
             </h3>
-            <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" v-on:click="toggleModal()">
-              <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+            <button class="p-1 ml-auto bg-transparent -mt-5 -mr-4 border-0 text-black opacity-8 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" v-on:click="emitCancel()">
+              <span class="bg-transparent text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
                 ×
               </span>
             </button>
@@ -22,7 +22,7 @@
             </p>
           </div>
           <!--footer-->
-          <div class="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+          <div v-if="controlButtons" class="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
              <button class="px-4 mt-2 mr-3 py-1 block text-white font-light tracking-wider hover:bg-red-500 bg-red-700 rounded"  @click="emitCancel" focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150>
                                {{cancelText}}
               </button>
@@ -49,6 +49,7 @@ export default {
             controlButtons: false,
             proceedText: String,
             cancelText: String,
+            controlButtons: Boolean
         },
     data() {
         return {
@@ -61,7 +62,7 @@ export default {
         },
 
         mounted() {
-          console.log(this.controlButtons)
+         
         },
         
         methods: {

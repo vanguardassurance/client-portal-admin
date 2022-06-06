@@ -15,6 +15,7 @@
                 </div>
             </div>
         </div>
+        
     </div>
 </template>
 
@@ -63,8 +64,6 @@ export default {
                 }
                 this.departments[claim.department].push(claim);
             })
-
-            console.log(this.departments)
             
         },
         refreshResults() {
@@ -72,10 +71,7 @@ export default {
         },
         loadCommentsBox(id) {
         },
-        loadStages(id) {
-        },
-        loadHistory(id) {
-        }
+        
     },
     created() {
         this.getClaims();
