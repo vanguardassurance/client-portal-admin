@@ -17,7 +17,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', type: 'text/css', href: 'https://pro.fontawesome.com/releases/v5.10.0/css/all.css' },
+      { rel: 'stylesheet', type: 'text/css', href: 'https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css' },
     ],
     script: [
     { hid: 'flowbite', src: 'https://unpkg.com/flowbite@1.4.5/dist/flowbite.js', defer: false },
@@ -31,6 +31,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '@plugins/formatDate.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -39,6 +40,7 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/tailwindcss
+    '@nuxtjs/moment',
     '@nuxtjs/tailwindcss',
   ],
 
@@ -53,6 +55,7 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     'nuxt-webfontloader',
+    '@nuxtjs/style-resources',
   ],
 
   webfontloader: {
@@ -61,11 +64,14 @@ export default {
     }
   },
 
+  styleResources: {
+    scss: []
+},
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://192.168.100.212:8000/api/',
-    //baseURL: "https://api.vanguardassurance.com/api/"
+    //baseURL: 'http://192.168.100.212:8000/api/',
+    baseURL: "https://api.vanguardassurance.com/api/"
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa

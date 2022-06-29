@@ -1,22 +1,19 @@
 <template>
-    <div>
-        <ListSearchBar  />
-        <div class="flex flex-col">
+    <div class="col-span-full xl:col-span-6 bg-white rounded-sm border border-slate-200">
+        <header class="px-5 py-4 border-b border-slate-100">
+            <h2 class="font-semibold text-slate-800">Motor Claims</h2>
+        </header>
+        <div class="p-3">
             <div class="overflow-x-auto">
-                <div class="align-middle inline-block min-w-full">
-                    <div class="shadow overflow-hidden">
-                    <vue-tabs>
-                        <v-tab v-for="(department, index) in departments" :key="index" :title="index">
-                          <MotorClaimsListIndex :claims="department" />
-                        </v-tab>
-                    </vue-tabs>
-                        
-                    </div>
-                </div>
+                <vue-tabs>
+                    <v-tab v-for="(department, index) in departments" :key="index" :title="index">
+                        <MotorClaimsListIndex @updateList="getClaims()" :claims="department" />
+                    </v-tab>
+                </vue-tabs>
             </div>
         </div>
-        
     </div>
+       
 </template>
 
 <script>
@@ -33,12 +30,7 @@ export default {
     },
     data: () => {
         return {
-            departments: {
-                "claims": [],
-                "survey": [],
-                "accounts": [],
-                "audit": [],
-            },
+            departments: {},
             claimsProcessor: null,
             currentClaim: null,
            
@@ -53,17 +45,26 @@ export default {
             },
        
         async getClaims() {
-            let claims = await this.$axios.post("admin/motor-claims");
-           
-            claims.data.forEach((claim, i, cl) => {
+            
+            await this.$axios.post("admin/motor-claims").then(claims=>{
+                 this.departments = {
+                        "claims": [],
+                        "survey": [],
+                        "accounts": [],
+                        "audit": [],
+                    }
+
+                    claims.data.forEach((claim, i, cl) => {
                 {
                     if(!claim.stage){
                         claim.stage = 0
                         claim.department = 'claims'
                     }
                 }
+               
                 this.departments[claim.department].push(claim);
             })
+            });
             
         },
         refreshResults() {
@@ -76,6 +77,7 @@ export default {
     created() {
         this.getClaims();
     },
+
 }
 </script>
 

@@ -4,7 +4,7 @@
         <i :class="iconClass"></i> {{title}}
         </p>
         <div class="mb-2" v-for="(info, i) in detailObject" :key="i">
-        <div class="text-gray-800 font-bold mb-1">{{i}}:</div> 
+        <div class="text-gray-800 font-bold mb-1  capitalize">{{i}}:</div> 
         <span class="info-detail">{{info}}</span>
         </div>
     </div>

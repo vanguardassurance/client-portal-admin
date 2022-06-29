@@ -48,7 +48,7 @@
                                     </td>
                                     
                                     <td class="p-2 whitespace-nowrap space-x-2text-right ">
-                                        <ListActions recordType="motor_claim" :linkToView="true" :item="claim" :stagesControlButtons="true" stagesType="motor_claim" linkPrepend="motor/" :id="claim._id" />
+                                        <MotorClaimListActions @updateSuccessfull="updateList()" recordType="motor_claim" :linkToView="true" :item="claim" :stagesControlButtons="true" stagesType="motor_claim" :linkPrepend="linkPrepend" :id="claim._id" />
                                     </td>
                                 </tr>                
                             </tbody>
@@ -58,7 +58,8 @@
 
 
 <script>
-import ListActions from './ListActions.vue'
+import MotorClaimListActions from './MotorClaimListActions.vue'
+
 
 export default {
     name: "MotorClaimsListIndex",
@@ -67,7 +68,8 @@ export default {
     },
     data: () => {
         return {
-           
+          // linkPrepend: "motor/",
+           linkPrepend: ""
         };
     },
     created() {
@@ -95,8 +97,12 @@ export default {
         toggleHistoryModal() {
             this.historyModal = !this.historyModal;
         },
+
+        updateList(){
+            this.$emit('updateList');
+        }
     },
-    components: { ListActions }
+    components: { MotorClaimListActions }
 }
 
 </script>
