@@ -52,6 +52,7 @@ export default {
                         "survey": [],
                         "accounts": [],
                         "audit": [],
+                        "completed": [],
                     }
 
                     claims.data.forEach((claim, i, cl) => {

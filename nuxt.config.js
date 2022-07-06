@@ -18,6 +18,8 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', type: 'text/css', href: 'https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css' },
+      { rel: 'stylesheet', type: 'text/css', href: '/css/filepond.min.css' },
+      { rel: 'stylesheet', type: 'text/css', href: '/css/filepond-plugin-image-preview.css' },
     ],
     script: [
     { hid: 'flowbite', src: 'https://unpkg.com/flowbite@1.4.5/dist/flowbite.js', defer: false },
@@ -70,7 +72,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    //baseURL: 'http://192.168.100.212:8000/api/',
+   // baseURL: 'http://192.168.100.212:8000/api/',
     baseURL: "https://api.vanguardassurance.com/api/"
   },
 

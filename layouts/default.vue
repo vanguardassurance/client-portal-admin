@@ -1,14 +1,13 @@
 <template>
   <div className="flex h-screen overflow-hidden">
       <Header />
-      <main>
+      <main class="text-xs">
           <Nuxt />
       </main>
   </div>
 </template>
 
 <style>
-
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -22,4 +21,4 @@
           font-size: 3.5rem;
         }
       }
-    </style>
+</style>

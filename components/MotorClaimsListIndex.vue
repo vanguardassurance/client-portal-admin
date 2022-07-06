@@ -69,7 +69,7 @@ export default {
     data: () => {
         return {
           // linkPrepend: "motor/",
-           linkPrepend: ""
+           linkPrepend: "motor/"
         };
     },
     created() {

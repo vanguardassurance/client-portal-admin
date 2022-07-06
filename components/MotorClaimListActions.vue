@@ -26,25 +26,20 @@
       @success="updateStage"
       :controlButtons="stagesControlButtons">
             <form @submit.prevent="">
-              <label class="block mt-4 text-sm">
-                <span class="text-gray-700 dark:text-gray-400">
-                  Select next department
-                </span>
-                
-              </label>
-              <select v-model="stage" class="block w-full mt-1 dark:text-gray-400 text-base form-select focus:border-blue-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
-                  <option class="capitalize dark:text-gray-400" value="">Select the next department</option>
-                  <option class="capitalize dark:text-gray-400" v-for="(s, i) in stages" :key="i" :value="i"> {{s.department}} ({{i}} - {{s.activity}})</option>
-                  <option class="capitalize dark:text-gray-400" value="completed"> completed</option>
-              </select>
+
+            <label for="stages" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Select an optioon:</label>
+            <select  v-model="stage" class="mb-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <option :value="''" disabled selected>Choose the next department</option>
+              <option selected v-for="(s, i) in stages" :key="i" :value="i"> {{s.department}} ({{i}} - {{s.activity}})</option>
+              <option value="completed">completed</option>
+            </select>
+            
               
 
-              <label class="block mt-4 text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Comment</span>
-                <textarea v-model="comment" required class="block w-full mt-1 text-sm form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="Please enter your comments.">
-
+              <label class="block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-gray-400">Comment</label>
+                <textarea v-model="comment"  class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none mt-1 text-sm form-textarea focus:border-blue-400 focus:shadow-outline-gray" rows="4"  placeholder="Please enter your comments.">
+                
                 </textarea>
-              </label>
                
               </form>
       </Modal>
@@ -73,23 +68,49 @@
       </Modal>
 
 
-      <Modal :showModal="attachmentModal" title="add attachments" 
+      <Modal :showModal="attachmentModal" title="Attachments" 
       :cancelText="'Cancel'" 
       :proceedText="'Ok'"
       @cancel="toggleAttachmentModal"
       @success="toggleAttachmentModal"
       :controlButtons="false">
+      <div v-if="attachmentForm">
+
+      <form multipart></form>
+        <div class="mb-2">
+            <label for="label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Label</label>
+            <input type="text" id="att_label" v-model="upload_label" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Label..." required>
+        </div>
+
+        <div class="mb-2">
+            <label for="att_comments" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Comments</label>
+            <input type="text" id="att_comment" v-model="upload_comment" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Comment..." required>
+        </div>
           <file-pond
-            name="attachments"
+            name="upload[attachments][]"
             ref="pond"
             label-idle="Drop files here..."
             v-bind:allow-multiple="true"
             accepted-file-types="image/jpeg, image/png, application/pdf"
-            server="/api"
-            v-bind:files="files"
+            :server="attachmentUrl"
+            :files="files"
             v-on:init="handleFilePondInit"/>
-          
+
+      <button @click="saveAttachments()" class="block w-full bg-blue-600 hover:bg-blue-400 my-2 text-white rounded">
+        Save
+      </button>
+      <button @click="toggleAttachments()" class="block w-full bg-green-600 hover:bg-green-400 my-2 text-white rounded">
+        View Attachments
+      </button>
+      </div>   
+      <div v-else>
+      <button @click="toggleAttachments()" class="block w-full bg-green-600 hover:bg-green-400 my-2 text-white rounded">
+        Add attachments
+      </button>
+      </div>
+     
       </Modal>
+
 
        <Modal :showModal="historyModal" :title="historyModalTitle" 
       :cancelText="'Cancel'" 
@@ -155,17 +176,24 @@
 <script>
 
 import vueFilePond from 'vue-filepond';
-
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
+//import FilePondPluginFileValidateType from 'filepond-plugin-file-validaate-type'
 // Create component
 const FilePond = vueFilePond(
-//  FilePondPluginFileValidateType,
-//  FilePondPluginImagePreview
+ // FilePondPluginFileValidateType,
+  FilePondPluginImagePreview
 );
 
 export default {
     name: "MotorClaimListActions",
     data(){
         return {
+          attachmentForm: false,
+          attachments: [],
+          upload_comment: "",
+          upload_label: "",
+          upload: [],
+          attachmentUrl: this.$axios.defaults.baseURL+"portal/tmp-uploads",
             recordComment: false,
             currentRecord:{},
             genLink: "",
@@ -178,15 +206,14 @@ export default {
             showMessageModal: false,
             driver: {},
             driverModal: false,
-            comment: "Proceed",
-            stage: "Select next department",
+            comment: "",
+            stage: "",
             proceedText: "Save and continue",
             cancelText: "Cancel",
             modalTitle: "Update claim progress",
             historyModalTitle: "History",
             historyModal: false,
             history: [],
-            stages: [],
             attachmentModalTitle: "Attachments",
             historyIcons: {
               forwards: "fa fa-arrow-right text-green-600",
@@ -212,6 +239,7 @@ export default {
 
     created() {
         this.stagesModal = false
+        this.getAttachments()
         this.loadStages()
         this.genPrepend()
         this.getDriver()
@@ -228,8 +256,12 @@ export default {
 
       handleFilePondInit: function () {
       console.log("FilePond has initialized");
-
+          this.$refs.pond.getFiles();
       // FilePond instance methods are available on `this.$refs.pond`
+    },
+
+    toggleAttachments(){
+      this.attachmentForm = !this.attachmentForm
     },
 
         updateStage(){
@@ -318,6 +350,25 @@ export default {
               })
         },
         
+        saveAttachments(){
+          this.upload = []
+        let  f = (this.$refs.pond.getFiles())
+         f.forEach(file=>{
+          this.upload.push(file.serverId)
+         })
+            this.$axios.post("admin/motor-attachment", { id: this.id, label: this.upload_label, comment: this.upload_comment, attachments: this.upload, claimType: "motor_claim"})
+             .then(result =>{
+                this.getAttachments()
+              })
+        },
+
+        getAttachments(){
+          this.$axios.post("admin/get-motor-attachments", { id: this.id, claimType: "motor_claim"})
+          .then(result =>{
+          this.$refs.pond
+            console.log(result)
+          })
+        }
     }
 }
 
